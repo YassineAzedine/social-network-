@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const app = express()
 require('dotenv').config();
 const userRoutes = require('./routes/user');
+const postRoutes = require('./routes/post');
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -14,6 +16,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 // app.use(cookieParser);
 app.use(cookieParser());
 app.use('/' , userRoutes);
+app.use('/' , postRoutes);
+
 
  const db = 'mongodb://localhost:27017/socialnetwork' 
 

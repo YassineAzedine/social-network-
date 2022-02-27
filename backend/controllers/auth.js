@@ -1,7 +1,8 @@
 const User = require("../models/user");
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
+const expressJWT = require('express-jwt')
+
 
 
 // const expressJwt = require('express-jwt')
@@ -14,7 +15,7 @@ const  singin = (req,res)=>{
     User.findOne({email:req.body.email} , (err,user)=>{
 
         const data =  req.body.email
-        console.log("🚀 ~ file: auth.js ~ line 16 ~ User.findOne ~ data", data)
+
        if(err || !user)res.json({error:err});
 
        user.comparePassword(req.body.password, function (err,isMatch){
@@ -34,6 +35,28 @@ const  singin = (req,res)=>{
     })
    
 };
+const signout = (req,res)=>{
+    res.clearCookie("t");
+    res.json({message:"Déconnécté"});
+
+}
+const requireSignin = expressJWT({
+    secret : process.env.JWT_SECRET,
+    userProperty:"auth",
+    algorithms:["HS256"],
+});
+const hasAuthorization = (req,res,next)=>{
+    const authorized = req.profile && req.auth && req.profile._id == req.auth._id
+    if(!authorized){
+        return res.json({
+            error:"Non authorized"
+        })
+    }
+    next();
+}
 module.exports = {
-    singin
+    singin,
+    signout,
+    hasAuthorization,
+    requireSignin,
 }
